@@ -1,0 +1,39 @@
+{
+	"name": "deploy",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"bin": {
+		"ftp-deploy": "./dist/index.js"
+	},
+	"scripts": {
+		"build":"tsc",
+		"test": "ts-node src/index.ts --config sample_config.json",
+		"test-upload": "ts-node src/index.ts --config sample_upload.json",
+		"test2": "ts-node src/index.ts --config sample_config.json --creds .ftp-credentials.json",
+		"test-upload2": "ts-node src/index.ts --config sample_upload.json --creds .ftp-credentials.json"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"type": "commonjs",
+	"dependencies": {
+		"ftp": "^0.3.10",
+		"commander": "^14.0.3",
+		"jszip": "^3.10.1",
+		"ssh2-sftp-client": "^12.1.1"
+	},
+	"devDependencies": {
+		"jest": "^30.2.0",
+		"nodemon": "^3.1.11",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.6.3"
+	},
+	"nodemonConfig": {
+		"ignore": [
+			"**/test/**",
+			"**/docs/**"
+		],
+		"delay": 5000
+	}
+}
