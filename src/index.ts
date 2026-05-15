@@ -41,7 +41,7 @@ function resolveAccount(task:any, credentials:any) {
 
 	if (typeof account === 'string') {
 		if (!credentials) {
-			throw new Error(`Account "${account}" requires a credentials file. Use --creds to specify one.`);
+			throw new Error(`Account "${account}" requires a credentials file. Create a .ftp-credentials.json or use --creds to specify one.`);
 		}
 		if (!credentials[account]) {
 			throw new Error(`Account "${account}" not found in credentials file. Available accounts: ${Object.keys(credentials).join(', ')}`);
@@ -236,6 +236,12 @@ async function runUpload(cwd:string, task:any, account:any) {
 	console.log("connecting");
 	await client.connect();
 
+	if (task.path) {
+		try {
+			await client.mkdir(task.path, true);
+		} catch (_) {}
+	}
+
 	for (const entry of task.files) {
 		var localPath, remoteName;
 		if (typeof entry === 'string') {
@@ -297,8 +303,6 @@ async function start()
 				console.log('Loaded', Object.keys(credentials).length, 'account(s):', Object.keys(credentials).join(', '));
 			} else if (options.creds) {
 				throw new Error(`Credentials file not found: ${credsPath}`);
-			} else {
-				console.log('No credentials file found at', credsPath, '- using inline credentials if present');
 			}
 			await run(options.config, credentials);
 		} else {

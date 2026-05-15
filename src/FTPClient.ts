@@ -40,6 +40,18 @@ class FTPClient
 			});
 		});
 	}
+	mkdir(dirPath: string, recursive: boolean)
+	{
+		return new Promise<void>((resolve, reject) => {
+			this.client.mkdir(dirPath, recursive, (err: any) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve();
+				}
+			});
+		});
+	}
 	connect()
 	{
 		return new Promise<string>((resolve, reject)=>{
