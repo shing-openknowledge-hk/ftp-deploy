@@ -61,13 +61,76 @@ function resolveAccount(task:any, credentials:any) {
 	throw new Error(`Task "${task.name}" has an invalid account configuration`);
 }
 
-async function run(configPath:string, credentials:any) {
-	
+function getGroupNames(task: any): string[] {
+	if (!task.group) return [];
+	if (Array.isArray(task.group)) return task.group;
+	return [task.group];
+}
+
+function filterTasks(tasks: any[], options: any): any[] {
+	var filtered = tasks;
+
+	if (options.task && options.task.length > 0) {
+		var names = options.task;
+		var missing = names.filter(n => !tasks.some(t => t.name === n));
+		if (missing.length > 0) {
+			var available = tasks.map(t => t.name).join(', ');
+			throw new Error(`Unknown task(s): ${missing.join(', ')}. Available: ${available}`);
+		}
+		filtered = filtered.filter(t => names.includes(t.name));
+		console.log(`🎯 Running specific tasks: ${names.join(', ')}`);
+	}
+
+	if (options.group && options.group.length > 0) {
+		var groups = options.group;
+		var hasGroup = tasks.some(t => getGroupNames(t).length > 0);
+		if (!hasGroup) {
+			console.warn(`⚠  --group specified but no tasks have a "group" property`);
+		}
+		filtered = filtered.filter(t => getGroupNames(t).some(g => groups.includes(g)));
+		console.log(`🎯 Running groups: ${groups.join(', ')}`);
+	}
+
+	if (options.from) {
+		var fromIdx = tasks.findIndex(t => t.name === options.from);
+		if (fromIdx === -1) {
+			var available = tasks.map(t => t.name).join(', ');
+			throw new Error(`--from task "${options.from}" not found. Available: ${available}`);
+		}
+		filtered = filtered.filter(t => tasks.indexOf(t) >= fromIdx);
+		console.log(`🎯 Running tasks from: "${options.from}"`);
+	}
+
+	if (options.to) {
+		var toIdx = tasks.findIndex(t => t.name === options.to);
+		if (toIdx === -1) {
+			var available = tasks.map(t => t.name).join(', ');
+			throw new Error(`--to task "${options.to}" not found. Available: ${available}`);
+		}
+		filtered = filtered.filter(t => tasks.indexOf(t) <= toIdx);
+		console.log(`🎯 Running tasks up to: "${options.to}"`);
+	}
+
+	if (options.skip && options.skip.length > 0) {
+		filtered = filtered.filter(t => !options.skip.includes(t.name));
+		console.log(`⏭️  Skipping tasks: ${options.skip.join(', ')}`);
+	}
+
+	return filtered;
+}
+
+async function run(configPath: string, credentials: any, filterOptions: any) {
 	const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 	console.log(`=============== ${config.name} ===============`);
-	// Merge environment variables
-	// const env = { ...process.env, ...config.env };
-	for (const task of config.tasks) {
+
+	var tasks = filterTasks(config.tasks, filterOptions);
+	if (tasks.length === 0) {
+		console.error("❌ No tasks match the specified filters");
+		process.exit(1);
+	}
+	console.log(`🎯 Running ${tasks.length} of ${config.tasks.length} total tasks`);
+
+	for (const task of tasks) {
 		console.log(`\n=============== Running task: ${task.name} ===============`);
 		try {
 			var cwd = config.cwd;
@@ -91,7 +154,7 @@ async function run(configPath:string, credentials:any) {
 			if(!message) message = err.toString();
 			console.error(`Task "${task.name}" failed:`, message, "❌");
 			console.log(`\n=============== task: ${task.name} ❌ ===============`);
-			process.exit(1); // terminate immediately
+			process.exit(1);
 		}
 	}
 
@@ -291,8 +354,29 @@ async function start()
 		program
 			.option('-c, --config <path>', 'Path to config file')
 			.option('--creds <path>', 'Path to credentials file (default: .ftp-credentials.json)')
+			.option('-t, --task <names...>', 'Run only specific tasks by name')
+			.option('--skip <names...>', 'Skip specific tasks by name')
+			.option('-g, --group <names...>', 'Run tasks belonging to specific groups')
+			.option('-l, --list', 'List all available tasks and exit')
+			.option('--from <name>', 'Run all tasks starting from this task (inclusive)')
+			.option('--to <name>', 'Run all tasks up to this task (inclusive)')
 			.parse(process.argv);
 		const options = program.opts();
+		
+		if (options.list) {
+			if (!options.config) {
+				console.error("--list requires --config to read the task list");
+				process.exit(1);
+			}
+			var config = JSON.parse(fs.readFileSync(options.config, 'utf8'));
+			console.log('📋 Available tasks:');
+			config.tasks.forEach((t: any, i: number) => {
+				var groups = getGroupNames(t);
+				var groupStr = groups.length > 0 ? ` [groups: ${groups.join(', ')}]` : '';
+				console.log(`  ${i + 1}. ${t.name} (${t.type})${groupStr}`);
+			});
+			process.exit(0);
+		}
 		
 		if (options.config) {
 			console.log('Config file:', options.config);
@@ -305,10 +389,10 @@ async function start()
 			} else if (options.creds) {
 				throw new Error(`Credentials file not found: ${credsPath}`);
 			}
-			await run(options.config, credentials);
+			await run(options.config, credentials, options);
 		} else {
 			console.error("missing config");
-			process.exit(1); // terminate immediately
+			process.exit(1);
 		}
 		console.log("END");
 		process.exit(0);

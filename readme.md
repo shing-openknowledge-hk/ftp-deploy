@@ -27,7 +27,8 @@ step 2 create config.json
 				"src/Main.as",
 				"-o",
 				"dist/app.swf"
-			]
+			],
+			"group": ["build", "all"]
 		},
 		{
 			"name": "post-build",
@@ -41,7 +42,8 @@ step 2 create config.json
 				"dist/app.swf",
 				"README.md"
 			],
-			"output": "package/app.zip"
+			"output": "package/app.zip",
+			"group": ["pack", "all"]
 		},
 		{
 			"account": "production",
@@ -50,7 +52,8 @@ step 2 create config.json
 			"type": "upload",
 			"files":["output.zip"],
 			"path": "tmp",
-			"mkdir": false
+			"mkdir": false,
+			"group": ["upload", "all"]
 		},
 		{
 			"name": "notify",
@@ -63,7 +66,8 @@ step 2 create config.json
 			"body": {
 				"status": "success",
 				"artifact": "app.zip"
-			}
+			},
+			"group": ["notify", "all"]
 		}
 	]
 }
@@ -100,7 +104,8 @@ step 4
 update package.json
 {
 	"scripts":{
-		"deploy":"ftp-deploy --config config.json --creds .ftp-credentials.json"
+		"deploy":"ftp-deploy --config config.json --creds .ftp-credentials.json",
+		"build":"ftp-deploy --config config.json --creds .ftp-credentials.json --group build"
 	}
 }
 

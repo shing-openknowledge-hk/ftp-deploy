@@ -8,10 +8,11 @@
 	},
 	"scripts": {
 		"build": "tsc",
-		"test": "ts-node src/index.ts --config sample_config.json",
-		"test-upload": "ts-node src/index.ts --config sample_upload.json",
-		"test2": "ts-node src/index.ts --config sample_config.json --creds .ftp-credentials.json",
-		"test-upload2": "ts-node src/index.ts --config sample_upload.json --creds .ftp-credentials.json"
+		"test-build": "ts-node src/index.ts --config sample_config.json --group build",
+		"test-pack": "ts-node src/index.ts --config sample_config.json --group pack",
+		"test-upload": "ts-node src/index.ts --config sample_config.json --group upload",
+		"test-check": "ts-node src/index.ts --config sample_config.json --group check",
+		"test": "ts-node src/index.ts --config sample_config.json"
 	},
 	"keywords": [],
 	"author": "",
