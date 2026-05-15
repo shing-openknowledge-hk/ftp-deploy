@@ -4,10 +4,10 @@
 	"description": "",
 	"main": "index.js",
 	"bin": {
-		"ftp-deploy": "./dist/index.js"
+		"ftp-deploy": "./bin/index.js"
 	},
 	"scripts": {
-		"build":"tsc",
+		"build": "tsc",
 		"test": "ts-node src/index.ts --config sample_config.json",
 		"test-upload": "ts-node src/index.ts --config sample_upload.json",
 		"test2": "ts-node src/index.ts --config sample_config.json --creds .ftp-credentials.json",
@@ -18,8 +18,8 @@
 	"license": "ISC",
 	"type": "commonjs",
 	"dependencies": {
-		"ftp": "^0.3.10",
 		"commander": "^14.0.3",
+		"ftp": "^0.3.10",
 		"jszip": "^3.10.1",
 		"ssh2-sftp-client": "^12.1.1"
 	},

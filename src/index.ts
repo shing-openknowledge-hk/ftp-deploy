@@ -236,7 +236,7 @@ async function runUpload(cwd:string, task:any, account:any) {
 	console.log("connecting");
 	await client.connect();
 
-	if (task.path) {
+	if (task.path && task.mkdir) {
 		try {
 			await client.mkdir(task.path, true);
 		} catch (_) {}
