@@ -64,13 +64,14 @@ function resolveAccount(task:any, credentials:any) {
 async function run(configPath:string, credentials:any) {
 	
 	const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+	console.log(`=============== ${config.name} ===============`);
 	// Merge environment variables
 	// const env = { ...process.env, ...config.env };
 	for (const task of config.tasks) {
 		console.log(`\n=============== Running task: ${task.name} ===============`);
 		try {
 			var cwd = config.cwd;
-			cwd = path.resolve(__dirname, cwd);
+			cwd = path.resolve(process.cwd(), cwd);
 			if(task.cwd) cwd = path.resolve(cwd, task.cwd);
 			if (task.type === 'batch') {
 				await runBatch(task.command, task.args || [], cwd, config.env);
