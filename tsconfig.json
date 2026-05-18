@@ -9,7 +9,7 @@
 		"strict": false,
 		"noImplicitAny": false,
 		"noImplicitThis": false,
-		"outDir": "./dist",
+		"outDir": "./bin",
 		"rootDir": "./src"
 	}
 }

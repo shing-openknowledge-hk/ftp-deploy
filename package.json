@@ -2,17 +2,18 @@
 	"name": "ftp-deploy",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
+	"main": "./bin/index.js",
 	"bin": {
 		"ftp-deploy": "./bin/index.js"
 	},
 	"scripts": {
 		"build": "tsc",
+		"test-feature": "ts-node src/index.ts --config test_new_features.json",
 		"test-build": "ts-node src/index.ts --config sample_config.json --group build",
 		"test-pack": "ts-node src/index.ts --config sample_config.json --group pack",
 		"test-upload": "ts-node src/index.ts --config sample_config.json --group upload",
 		"test-check": "ts-node src/index.ts --config sample_config.json --group check",
-		"test": "ts-node src/index.ts --config sample_config.json"
+		"test": "ts-node src/index.ts --config configs/build_dev.json"
 	},
 	"keywords": [],
 	"author": "",
@@ -25,10 +26,16 @@
 		"ssh2-sftp-client": "^12.1.1"
 	},
 	"devDependencies": {
+		"dotenv": "^16.6.1",
+		"ftp": "^0.3.10",
+		"git-client": "^1.8.3",
 		"jest": "^30.2.0",
+		"mime": "^3.0.0",
+		"moment": "^2.30.1",
 		"nodemon": "^3.1.11",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.6.3"
+		"typescript": "^5.6.3",
+		"xml-js": "^1.6.11"
 	},
 	"nodemonConfig": {
 		"ignore": [
