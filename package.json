@@ -23,19 +23,19 @@
 		"commander": "^14.0.3",
 		"ftp": "^0.3.10",
 		"jszip": "^3.10.1",
-		"ssh2-sftp-client": "^12.1.1"
-	},
-	"devDependencies": {
-		"dotenv": "^16.6.1",
+		"git-client": "^1.8.3",
+		"xml-js": "^1.6.11",
 		"ftp": "^0.3.10",
 		"git-client": "^1.8.3",
 		"jest": "^30.2.0",
 		"mime": "^3.0.0",
-		"moment": "^2.30.1",
+		"moment": "^2.30.1"
+	},
+	"devDependencies": {
+		"dotenv": "^16.6.1",
 		"nodemon": "^3.1.11",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.6.3",
-		"xml-js": "^1.6.11"
+		"typescript": "^5.6.3"
 	},
 	"nodemonConfig": {
 		"ignore": [
